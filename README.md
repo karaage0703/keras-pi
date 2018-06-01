@@ -16,6 +16,12 @@ Using Keras for deep learning application
 $ python pred.py -l ./model/labels.txt -m ./model/mnist_deep_model.json -w ./model/weights.99.hdf5 -t ./data/test.jpg
 ```
 
+## Prediction on Raspberry Pi
+
+```sh
+$ python3 inspect_camera_pi.py -l ./model/labels.txt -m ./model/mnist_deep_model.json -w ./model/weights.99.hdf5 -t ./data/test.jpg
+```
+
 # Licence
 This software is released under the MIT License, see LICENSE.
 
