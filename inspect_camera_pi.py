@@ -26,14 +26,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='keras-pi.')
     parser.add_argument('-m', '--model', default='./model/mnist_deep_model.json')
     parser.add_argument('-w', '--weights', default='./model/weights.99.hdf5')
-    parser.add_argument('-t', '--testfile', default='./data/test.jpg')
     parser.add_argument('-l', '--labels', default='./model/labels.txt')
 
     args = parser.parse_args()
 
 
     labels = []
-    # with open(backup_dir + '/labels.txt','r') as f:
     with open(args.labels,'r') as f:
         for line in f:
             labels.append(line.rstrip())
@@ -44,7 +42,6 @@ if __name__ == '__main__':
 
     # model_pred.summary()
 
-    cam = cv2.VideoCapture(0)
     while True:
         shutter()
         img = cv2.imread(photo_filename)
