@@ -9,8 +9,8 @@ import cv2
 from time import sleep
 
 GST_STR = 'nvarguscamerasrc \
-    ! video/x-raw(memory:NVMM), width=3280, height=2464, format=(string)NV12, framerate=(fraction)30/1 \
-    ! nvvidconv ! video/x-raw, width=(int)640, height=(int)480, format=(string)BGRx \
+    ! video/x-raw(memory:NVMM), width=3280, height=2464, format=(string)NV12, framerate=(fraction)21/1 \
+    ! nvvidconv ! video/x-raw, width=(int)224, height=(int)224, format=(string)BGRx \
     ! videoconvert \
     ! appsink'
 
@@ -48,7 +48,7 @@ if __name__ == '__main__':
             break
 
         count += 1
-        if count == 240:
+        if count == 1:
             X = []
             img = capture.copy()
             img = cv2.resize(img, (64, 64))
