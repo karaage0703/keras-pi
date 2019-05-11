@@ -22,7 +22,7 @@ $ python pred.py -l ./model/labels.txt -m ./model/mnist_deep_model.json -w ./mod
 $ python3 inspect_camera_pi.py -l ./model/labels.txt -m ./model/mnist_deep_model.json -w ./model/weights.99.hdf5 -t ./data/test.jpg
 ```
 
-# Licence
+# License
 This software is released under the MIT License, see LICENSE.
 
 # Authors
