@@ -1,25 +1,14 @@
 #!/usr/bin/env python
-#! -*- coding: utf-8 -*-
+# -*- coding:utf-8 -*-
 
 import argparse
-from keras.preprocessing.image import array_to_img, img_to_array, load_img
-from keras.models import model_from_json
+from tensorflow.keras.preprocessing.image import array_to_img, img_to_array, load_img
+from tensorflow.keras.models import model_from_json
 import numpy as np
 import cv2
-import picamera
-from time import sleep
-
-photo_filename = '/tmp/data.jpg'
-
-def shutter():
-    photofile = open(photo_filename, 'wb')
-    print(photofile)
-
-    with picamera.PiCamera() as camera:
-        camera.resolution = (640,480)
-        camera.start_preview()
-        sleep(1.000)
-        camera.capture(photofile)
+import time
+from picamera.array import PiRGBArray
+from picamera import PiCamera
 
 if __name__ == '__main__':
     # parse options
@@ -30,6 +19,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    camera = PiCamera()
+    camera.resolution = (640, 480)
 
     labels = []
     with open(args.labels,'r') as f:
@@ -42,24 +33,50 @@ if __name__ == '__main__':
 
     # model_pred.summary()
 
+    max_count = 0
+    count = 0
+    stream = PiRGBArray(camera)
     while True:
-        shutter()
-        img = cv2.imread(photo_filename)
-        img = cv2.resize(img, (64, 64))
+        camera.capture(stream, 'bgr', use_video_port=True)
+        key = cv2.waitKey(1)
+        if key == 27: # when ESC key is pressed break
+            break
 
-        X = []
-        img = img_to_array(img)
-        X.append(img)
-        X = np.asarray(X)
-        preds = model_pred.predict(X)
+        count += 1
+        if count > max_count:
+            X = []
+            img_org = stream.array
+            img = cv2.resize(img_org, (64, 64))
+            img = img_to_array(img)
+            X.append(img)
+            X = np.asarray(X)
+            start = time.time()
+            preds = model_pred.predict(X)
+            elapsed_time = time.time() - start
 
-        pred_label = ""
+            pred_label = ""
 
-        label_num = 0
-        for i in preds[0]:
-            if i == 1.0:
-                pred_label = labels[label_num]
-                break
-            label_num += 1
+            label_num = 0
+            for i in preds[0]:
+                if i == 1.0:
+                    pred_label = labels[label_num]
+                    break
+                label_num += 1
 
-        print("label=" + pred_label)
+            # Put speed
+            speed_info = '%s: %f' % ('speed=', elapsed_time)
+            # print(speed_info)
+            cv2.putText(img_org, speed_info , (10,50), \
+              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1, cv2.LINE_AA)
+
+            # Put label
+            cv2.putText(img_org, pred_label, (10,100), \
+              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1, cv2.LINE_AA)
+
+            cv2.imshow('keras-pi inspector', img_org)
+            count = 0
+        stream.seek(0)
+        stream.truncate()
+
+    camera.close()
+    cv2.destroyAllWindows()
