@@ -2,11 +2,11 @@
 # -*- coding:utf-8 -*-
 
 import argparse
-from keras.preprocessing.image import array_to_img, img_to_array, load_img
-from keras.models import model_from_json
+from tensorflow.keras.preprocessing.image import array_to_img, img_to_array, load_img
+from tensorflow.keras.models import model_from_json
 import numpy as np
 import cv2
-from time import sleep
+import time
 
 if __name__ == '__main__':
     # parse options
@@ -16,7 +16,6 @@ if __name__ == '__main__':
     parser.add_argument('-l', '--labels', default='./model/labels.txt')
 
     args = parser.parse_args()
-
 
     labels = []
     with open(args.labels,'r') as f:
@@ -30,26 +29,30 @@ if __name__ == '__main__':
     # model_pred.summary()
 
     cam = cv2.VideoCapture(0)
+
+    max_count = 0
     count = 0
+
     while True:
         ret, capture = cam.read()
         if not ret:
             print('error')
             break
-        cv2.imshow('keras-pi inspector', capture)
         key = cv2.waitKey(1)
         if key == 27: # when ESC key is pressed break
             break
 
         count += 1
-        if count == 30:
+        if count > max_count:
             X = []
             img = capture.copy()
             img = cv2.resize(img, (64, 64))
             img = img_to_array(img)
             X.append(img)
             X = np.asarray(X)
+            start = time.time()
             preds = model_pred.predict(X)
+            elapsed_time = time.time() - start
 
             pred_label = ""
 
@@ -60,7 +63,17 @@ if __name__ == '__main__':
                     break
                 label_num += 1
 
-            print("label=" + pred_label)
+            # Put speed
+            speed_info = '%s: %f' % ('speed=', elapsed_time)
+            # print(speed_info)
+            cv2.putText(capture, speed_info , (10,50), \
+              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1, cv2.LINE_AA)
+
+            # Put label
+            cv2.putText(capture, pred_label, (10,100), \
+              cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 1, cv2.LINE_AA)
+
+            cv2.imshow('keras-pi inspector', capture)
             count = 0
 
     cam.release()
