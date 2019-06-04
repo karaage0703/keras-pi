@@ -6,6 +6,7 @@ from tensorflow.keras.preprocessing.image import array_to_img, img_to_array, loa
 from tensorflow.keras.models import model_from_json
 import numpy as np
 import cv2
+import sys
 import time
 
 if __name__ == '__main__':
@@ -14,6 +15,7 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--model', default='./model/mnist_deep_model.json')
     parser.add_argument('-w', '--weights', default='./model/weights.99.hdf5')
     parser.add_argument('-l', '--labels', default='./model/labels.txt')
+    parser.add_argument('-d', '--device', default='normal_cam') # normal_cam /jetson_nano_raspi_cam
 
     args = parser.parse_args()
 
@@ -27,10 +29,20 @@ if __name__ == '__main__':
     model_pred.load_weights(args.weights)
 
     # model_pred.summary()
+    if args.device == 'normal_cam':
+        cam = cv2.VideoCapture(0)
+    elif args.device == 'jetson_nano_raspi_cam':
+        GST_STR = 'nvarguscamerasrc \
+            ! video/x-raw(memory:NVMM), width=3280, height=2464, format=(string)NV12, framerate=(fraction)21/1 \
+            ! nvvidconv ! video/x-raw, width=(int)640, height=(int)480, format=(string)BGRx \
+            ! videoconvert \
+            ! appsink'
+        cam = cv2.VideoCapture(GST_STR, cv2.CAP_GSTREAMER) # Raspi cam
+    else:
+        print('wrong device')
+        sys.exit()
 
-    cam = cv2.VideoCapture(0)
-
-    max_count = 0
+    count_max = 0
     count = 0
 
     while True:
@@ -43,7 +55,7 @@ if __name__ == '__main__':
             break
 
         count += 1
-        if count > max_count:
+        if count > count_max:
             X = []
             img = capture.copy()
             img = cv2.resize(img, (64, 64))
