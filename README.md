@@ -2,9 +2,18 @@
 Using Keras for deep learning application
 
 # Dependency
+## Mac
 - Anaconda3==4.4.0
-- TensorFlow==1.7.0
-- Keras==2.1.6
+- TensorFlow==1.13.1
+- Open CV
+
+## Raspberry Pi
+- TensorFlow==1.13.1
+- Open CV
+
+## Jetson Nano
+- TensorFlow==1.13.1
+- Open CV
 
 # Setup
 
@@ -13,13 +22,23 @@ Using Keras for deep learning application
 ## Prediction
 
 ```sh
-$ python pred.py -l ./model/labels.txt -m ./model/mnist_deep_model.json -w ./model/weights.99.hdf5 -t ./data/test.jpg
+$ python pred.py -l='./model/labels.txt' -m='./model/mnist_deep_model.json' -w='./model/weights.99.hdf5' -t='./data/test.jpg'
 ```
 
-## Prediction on Raspberry Pi
+## Prediction on Mac
+```sh
+$ python inspect_camera.py -l='./model/labels.txt' -m='./model/mnist_deep_model.json' -w='./model/weights.99.hdf5'
+```
+
+## Prediction on Raspberry Pi with raspi cam
 
 ```sh
-$ python3 inspect_camera_pi.py -l ./model/labels.txt -m ./model/mnist_deep_model.json -w ./model/weights.99.hdf5 -t ./data/test.jpg
+$ python3 inspect_camera_pi.py -l='./model/labels.txt' -m='./model/mnist_deep_model.json' -w='./model/weights.99.hdf5'
+```
+
+## Prediction on Jetson Nano with raspi cam
+```sh
+$ python3 inspect_camera.py -l='./model/labels.txt' -m='./model/mnist_deep_model.json' -w='./model/weights.99.hdf5' -d='jetson_nano_raspi_cam'
 ```
 
 # License
