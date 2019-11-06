@@ -3,8 +3,8 @@
 
 import argparse
 import numpy as np
-from keras.preprocessing.image import array_to_img, img_to_array, load_img
-from keras.models import model_from_json
+from tensorflow.keras.preprocessing.image import array_to_img, img_to_array, load_img
+from tensorflow.keras.models import model_from_json
 
 if __name__ == "__main__":
     # parse options
