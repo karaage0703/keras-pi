@@ -50,6 +50,7 @@ if __name__ == '__main__':
             img = img_to_array(img)
             X.append(img)
             X = np.asarray(X)
+            X = X/255.0
             start = time.time()
             preds = model_pred.predict(X)
             elapsed_time = time.time() - start
@@ -57,10 +58,12 @@ if __name__ == '__main__':
             pred_label = ""
 
             label_num = 0
+            tmp_max_pred = 0
+            print(preds)
             for i in preds[0]:
-                if i == 1.0:
+                if i > tmp_max_pred:
                     pred_label = labels[label_num]
-                    break
+                    tmp_max_pred = i
                 label_num += 1
 
             # Put speed
