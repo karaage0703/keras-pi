@@ -60,6 +60,7 @@ if __name__ == '__main__':
             img = capture.copy()
             img = cv2.resize(img, (64, 64))
             img = img_to_array(img)
+            img = img/255
             X.append(img)
             X = np.asarray(X)
             start = time.time()
@@ -69,10 +70,11 @@ if __name__ == '__main__':
             pred_label = ""
 
             label_num = 0
+            tmp_max_pred = 0
             for i in preds[0]:
-                if i == 1.0:
+                if i > tmp_max_pred:
                     pred_label = labels[label_num]
-                    break
+                    tmp_max_pred = i
                 label_num += 1
 
             # Put speed
